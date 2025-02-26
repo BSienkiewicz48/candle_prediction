@@ -1,7 +1,7 @@
 #Kliknij play żeby połączyć się z serwerem XTB
 import websocket
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 import streamlit as st
 import joblib
@@ -208,10 +208,14 @@ columns_to_drop = ['Time', 'Close_Price_USDPLN_Lag1', 'Open_Price_USDPLN_Lag1', 
 X_latest = latest_data.drop(labels=[col for col in columns_to_drop if col in latest_data]).values.reshape(1, -1)
 
 # Wczytanie modeli
-model_xgboost_close = joblib.load('model_xgboost_close.pkl')
-model_xgboost_Open = joblib.load('model_xgboost_Open.pkl')
-model_xgboost_Max = joblib.load('model_xgboost_Max.pkl')
-model_xgboost_Min = joblib.load('model_xgboost_Min.pkl')
+try:
+    model_xgboost_close = joblib.load('model_xgboost_close.pkl')
+    model_xgboost_Open = joblib.load('model_xgboost_Open.pkl')
+    model_xgboost_Max = joblib.load('model_xgboost_Max.pkl')
+    model_xgboost_Min = joblib.load('model_xgboost_Min.pkl')
+except FileNotFoundError as e:
+    st.error(f"Model file not found: {e.filename}")
+    st.stop()
 
 # Prognozowanie wartości za pomocą modeli
 pred_close_price = model_xgboost_close.predict(X_latest)
