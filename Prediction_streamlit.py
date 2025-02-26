@@ -247,8 +247,8 @@ fig.add_trace(go.Candlestick(
     low=[pred_min_price[0]],
     close=[pred_close_price[0]],
     name='Predicted',
-    increasing_fillcolor='rgba(173, 216, 230, 0.5)',  # Jasnoniebieski, lekko przezroczysty
-    decreasing_fillcolor='rgba(173, 216, 230, 0.5)'   # Jasnoniebieski, lekko przezroczysty
+    increasing_fillcolor='rgba(0, 0, 255, 0.5)',  
+    decreasing_fillcolor='rgba(0, 0, 255, 0.5)'   
 ))
 
 # Ustawienia wykresu
