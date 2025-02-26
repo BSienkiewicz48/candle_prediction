@@ -249,8 +249,8 @@ fig.add_trace(go.Candlestick(
     name='Predicted',
     increasing_line_color='green',
     decreasing_line_color='red',
-    increasing_fillcolor='blue',
-    decreasing_fillcolor='blue'
+    increasing_fillcolor='green',
+    decreasing_fillcolor='red'
 ))
 
 # Ustawienia wykresu
