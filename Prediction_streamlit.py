@@ -239,37 +239,14 @@ fig = go.Figure(data=[go.Candlestick(
     name=f'{symbol} Actual'
 )])
 
-# Dodanie danych prognozowanych do wykresu
-fig.add_trace(go.Scatter(
+# Dodanie danych prognozowanych jako kolejna świeczka
+fig.add_trace(go.Candlestick(
     x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
-    y=[pred_close_price[0]],
-    mode='markers',
-    marker=dict(color='red', size=10),
-    name='Predicted Close Price'
-))
-
-fig.add_trace(go.Scatter(
-    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
-    y=[pred_open_price[0]],
-    mode='markers',
-    marker=dict(color='blue', size=10),
-    name='Predicted Open Price'
-))
-
-fig.add_trace(go.Scatter(
-    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
-    y=[pred_max_price[0]],
-    mode='markers',
-    marker=dict(color='green', size=10),
-    name='Predicted Max Price'
-))
-
-fig.add_trace(go.Scatter(
-    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
-    y=[pred_min_price[0]],
-    mode='markers',
-    marker=dict(color='orange', size=10),
-    name='Predicted Min Price'
+    open=[pred_open_price[0]],
+    high=[pred_max_price[0]],
+    low=[pred_min_price[0]],
+    close=[pred_close_price[0]],
+    name='Predicted'
 ))
 
 # Ustawienia wykresu
