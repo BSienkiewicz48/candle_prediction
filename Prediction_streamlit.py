@@ -224,7 +224,7 @@ pred_max_price = model_xgboost_Max.predict(X_latest)
 pred_min_price = model_xgboost_Min.predict(X_latest)
 
 # Tworzenie interfejsu Streamlit
-st.title("Wykres świecowy {symbol} z prognozami")
+st.title("Wykres świecowy USDPLN z prognozą")
 
 import plotly.graph_objects as go
 
