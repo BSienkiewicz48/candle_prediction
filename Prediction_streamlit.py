@@ -227,41 +227,58 @@ pred_min_price = model_xgboost_Min.predict(X_latest)
 st.title("Prognozowanie cen")
 st.write("Kliknij przycisk poniżej, aby odświeżyć dane i uzyskać najnowsze prognozy.")
 
-if st.button('Odśwież'):
-    # Kod uruchamiający się po kliknięciu przycisku
-    # Połączenie z serwerem, pobranie danych i wyświetlenie wartości predykcji
+import plotly.graph_objects as go
 
-    # Pobranie 10 najnowszych wartości z prediction_df
-    latest_10 = prediction_df.sort_values(by='Time', ascending=False).head(10).sort_values(by='Time')
+# Tworzenie wykresu świecowego
+fig = go.Figure(data=[go.Candlestick(
+    x=prediction_df['Time'],
+    open=prediction_df[f'Open_{symbol}'],
+    high=prediction_df[f'max_price_{symbol}'],
+    low=prediction_df[f'min_price_{symbol}'],
+    close=prediction_df[f'Close_Price_{symbol}'],
+    name=f'{symbol} Actual'
+)])
 
-    # Dodanie prognozowanej świecy
-    new_row = {
-        'Time': latest_10['Time'].iloc[-1] + pd.Timedelta(minutes=15),
-        f'Open_{symbol}': pred_open_price[0],
-        f'Close_{symbol}': pred_close_price[0],
-        f'High_{symbol}': pred_max_price[0],
-        f'Low_{symbol}': pred_min_price[0],
-        f'Volume_{symbol}': 0,  # Zakładamy brak danych o wolumenie dla prognozy
-        f'Close_Price_{symbol}': pred_close_price[0] + pred_open_price[0],
-        f'max_price_{symbol}': pred_open_price[0] + pred_max_price[0],
-        f'min_price_{symbol}': pred_open_price[0] + pred_min_price[0],
-        f'PriceChange_{symbol}': pred_close_price[0] - pred_open_price[0],
-        f'Volatility_{symbol}': pred_max_price[0] - pred_min_price[0]
-    }
-    latest_10 = latest_10.append(new_row, ignore_index=True)
+# Dodanie danych prognozowanych do wykresu
+fig.add_trace(go.Scatter(
+    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
+    y=[pred_close_price[0]],
+    mode='markers',
+    marker=dict(color='red', size=10),
+    name='Predicted Close Price'
+))
 
-    # Tworzenie wykresu świecowego
-    import plotly.graph_objects as go
+fig.add_trace(go.Scatter(
+    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
+    y=[pred_open_price[0]],
+    mode='markers',
+    marker=dict(color='blue', size=10),
+    name='Predicted Open Price'
+))
 
-    fig = go.Figure(data=[go.Candlestick(
-        x=latest_10['Time'],
-        open=latest_10[f'Open_{symbol}'],
-        high=latest_10[f'High_{symbol}'],
-        low=latest_10[f'Low_{symbol}'],
-        close=latest_10[f'Close_{symbol}']
-    )])
+fig.add_trace(go.Scatter(
+    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
+    y=[pred_max_price[0]],
+    mode='markers',
+    marker=dict(color='green', size=10),
+    name='Predicted Max Price'
+))
 
-    fig.update_layout(title='Prognozowane ceny', xaxis_title='Czas', yaxis_title='Cena')
+fig.add_trace(go.Scatter(
+    x=[prediction_df['Time'].iloc[-1] + pd.Timedelta(minutes=15)],
+    y=[pred_min_price[0]],
+    mode='markers',
+    marker=dict(color='orange', size=10),
+    name='Predicted Min Price'
+))
 
-    # Wyświetlenie wykresu
-    st.plotly_chart(fig)
+# Ustawienia wykresu
+fig.update_layout(
+    title=f'Wykres świecowy {symbol} z prognozami',
+    xaxis_title='Czas',
+    yaxis_title='Cena',
+    xaxis_rangeslider_visible=False
+)
+
+# Wyświetlenie wykresu w Streamlit
+st.plotly_chart(fig)
