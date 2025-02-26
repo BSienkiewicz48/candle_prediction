@@ -1,0 +1,5 @@
+websocket-client
+jsonschema
+pandas
+streamlit
+joblib
