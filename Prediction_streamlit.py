@@ -224,15 +224,44 @@ pred_max_price = model_xgboost_Max.predict(X_latest)
 pred_min_price = model_xgboost_Min.predict(X_latest)
 
 # Tworzenie interfejsu Streamlit
-st.title("Prognozowanie cen walut")
+st.title("Prognozowanie cen")
 st.write("Kliknij przycisk poniżej, aby odświeżyć dane i uzyskać najnowsze prognozy.")
 
 if st.button('Odśwież'):
     # Kod uruchamiający się po kliknięciu przycisku
     # Połączenie z serwerem, pobranie danych i wyświetlenie wartości predykcji
 
-    # Wyświetlenie wartości predykcji
-    st.write(f"Prognozowana cena zamknięcia: {pred_close_price[0]:.4f}")
-    st.write(f"Prognozowana cena otwarcia: {pred_open_price[0]:.4f}")
-    st.write(f"Prognozowana maksymalna cena: {pred_max_price[0]:.4f}")
-    st.write(f"Prognozowana minimalna cena: {pred_min_price[0]:.4f}")
+    # Pobranie 10 najnowszych wartości z prediction_df
+    latest_10 = prediction_df.sort_values(by='Time', ascending=False).head(10).sort_values(by='Time')
+
+    # Dodanie prognozowanej świecy
+    new_row = {
+        'Time': latest_10['Time'].iloc[-1] + pd.Timedelta(minutes=15),
+        f'Open_{symbol}': pred_open_price[0],
+        f'Close_{symbol}': pred_close_price[0],
+        f'High_{symbol}': pred_max_price[0],
+        f'Low_{symbol}': pred_min_price[0],
+        f'Volume_{symbol}': 0,  # Zakładamy brak danych o wolumenie dla prognozy
+        f'Close_Price_{symbol}': pred_close_price[0] + pred_open_price[0],
+        f'max_price_{symbol}': pred_open_price[0] + pred_max_price[0],
+        f'min_price_{symbol}': pred_open_price[0] + pred_min_price[0],
+        f'PriceChange_{symbol}': pred_close_price[0] - pred_open_price[0],
+        f'Volatility_{symbol}': pred_max_price[0] - pred_min_price[0]
+    }
+    latest_10 = latest_10.append(new_row, ignore_index=True)
+
+    # Tworzenie wykresu świecowego
+    import plotly.graph_objects as go
+
+    fig = go.Figure(data=[go.Candlestick(
+        x=latest_10['Time'],
+        open=latest_10[f'Open_{symbol}'],
+        high=latest_10[f'High_{symbol}'],
+        low=latest_10[f'Low_{symbol}'],
+        close=latest_10[f'Close_{symbol}']
+    )])
+
+    fig.update_layout(title='Prognozowane ceny', xaxis_title='Czas', yaxis_title='Cena')
+
+    # Wyświetlenie wykresu
+    st.plotly_chart(fig)
