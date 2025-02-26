@@ -246,7 +246,11 @@ fig.add_trace(go.Candlestick(
     high=[pred_max_price[0]],
     low=[pred_min_price[0]],
     close=[pred_close_price[0]],
-    name='Predicted'
+    name='Predicted',
+    increasing_line_color='blue',
+    decreasing_line_color='blue',
+    increasing_fillcolor='blue',
+    decreasing_fillcolor='blue'
 ))
 
 # Ustawienia wykresu
